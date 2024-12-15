@@ -22,7 +22,7 @@ public class BookController {
     public String getAllBooks() {
         return "books/all";
     }
-    
+
     @GetMapping("/{id}")
     public String getBookById(int id) {
         return "books/single";
