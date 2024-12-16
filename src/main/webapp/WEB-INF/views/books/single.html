@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+</head>
+<body>
+<h1> Book details </h1>
+<p><strong>Name</strong> <span th:text="${book.name}">VALUE</span></p>
+<p><strong>Author</strong> <span th:text="${book.author}">VALUE</span></p>
+<p><strong>Year</strong> <span th:text="${book.year}">VALUE</span></p>
+
+<div class="action-links">
+    <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
+    <a th:href="@{/books}">Back to List</a>
+</div>
+
+<br>
+<form th:method="DELETE" th:action="@{/books/{id}(id=${book.id})}">
+    <input type="submit" value="DELETE!"/>
+</form>
+</body>
+</html>

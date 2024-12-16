@@ -1,11 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" xmlns:th="http://thymeleaf.org">
-    <title>All books</title>
+    <title>All Books</title>
 </head>
 <body>
-
-Hello just testing
+<ul class="book-list" th:each="book : ${books}">
+    <li class="book-item">
+        <a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName()}">Name</a>
+        <div class="book-details">
+            <p><strong>Author</strong> <span th:text="${book.getAuthor()}">Some Name</span></p>
+            <p><strong>Year</strong> <span th:text="${book.getYear()}">2005</span></p>
+        </div>
+    </li>
+</ul>
+<hr>
+<a class="create-link" href="/books/new">Add New Book</a>
 </body>
 </html>
