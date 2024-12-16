@@ -1,11 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('https://png.pngtree.com/background/20230527/original/pngtree-an-old-bookcase-in-a-library-picture-image_2760144.jpg') no-repeat center center/cover;
+            color: #fff;
+            text-align: center;
+        }
+
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            margin-bottom: 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            background: linear-gradient(135deg, #2c7dbe, #1e5c8a);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-links a:hover {
+            transform: translateY(-5px);
+            background: #245f8d;
+        }
+    </style>
 </head>
 <body>
-  <a th:href="@{/users}">USERS</a>
-  <a th:href="@{/books}">BOOKS</a>
+
+<div class="overlay"></div>
+
+
+<div class="content">
+    <h1>Welcome to the Library System</h1>
+    <div class="nav-links">
+        <a th:href="@{/users}">Users</a>
+        <a th:href="@{/books}">Books</a>
+    </div>
+</div>
 </body>
 </html>

@@ -1,21 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Users</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c7dbe;
+            margin-bottom: 20px;
+        }
+        ul.user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        li.user-item {
+            background: #fff;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li.user-item a {
+            text-decoration: none;
+            color: #2c7dbe;
+            font-weight: bold;
+        }
+        li.user-item a:hover {
+            text-decoration: underline;
+        }
+        li.user-item p {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .user-details {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .action-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .action-links a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #2c7dbe;
+            font-weight: bold;
+        }
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <ul class="user-list" th:each="user : ${users}">
-        <li class="user-item">
-            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getFullName()}">Name</a>
-            <div class="user-details">
-                <p><strong>Birth Year</strong> <span th:text="${user.getBirthYear()}">2005</span></p>
-            </div>
-        </li>
-    </ul>
+<h1>All Users</h1>
+<ul class="user-list" th:each="user : ${users}">
+    <li class="user-item">
+        <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getFullName()}">Name</a>
+        <div class="user-details">
+            <p><strong>Birth Year:</strong> <span th:text="${user.getBirthYear()}">2005</span></p>
+        </div>
+    </li>
+</ul>
 
-    <hr>
-    <a class="create-link" href="/users/new">Create New User</a>
-    <a href="/home">Home page</a>
+<div class="action-links">
+    <a href="/users/new" class="create-link">Create New User</a>
+    <a href="/home">Home Page</a>
+</div>
 </body>
 </html>

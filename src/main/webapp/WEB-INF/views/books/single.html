@@ -2,44 +2,164 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Book</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://png.pngtree.com/background/20230527/original/pngtree-an-old-bookcase-in-a-library-picture-image_2760144.jpg') no-repeat center center/cover;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-top: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        strong {
+            color: #2c7dbe;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .section span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        form {
+            margin-top: 15px;
+        }
+
+        input[type="submit"] {
+            background-color: #d9534f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #c9302c;
+        }
+
+        select, label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ссылки */
+        .action-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .action-links a {
+            text-decoration: none;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #2c7dbe;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .action-links a:hover {
+            background-color: #1e5c8a;
+        }
+
+        /* DELETE button */
+        .delete-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<h1> Book details </h1>
-<p><strong>Name</strong> <span th:text="${book.getName()}">VALUE</span></p>
-<p><strong>Author</strong> <span th:text="${book.getAuthor()}">VALUE</span></p>
-<p><strong>Year</strong> <span th:text="${book.getYear()}">VALUE</span></p>
+<h1>Book Details</h1>
 
-<div th:if="${owner}">
-    <span>Current owner: </span> <span th:text="${owner.getFullName()}">User name</span>
+<div class="container">
+    <p><strong>Name:</strong> <span th:text="${book.getName()}">VALUE</span></p>
+    <p><strong>Author:</strong> <span th:text="${book.getAuthor()}">VALUE</span></p>
+    <p><strong>Year:</strong> <span th:text="${book.getYear()}">VALUE</span></p>
 
-    <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
-        <input type="submit" value="Release the book"/>
-    </form>
+    <!-- Владелец книги -->
+    <div class="section owner-section" th:if="${owner}">
+        <span>Current owner:</span> <span th:text="${owner.getFullName()}">User name</span>
+        <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
+            <input type="submit" value="Release the book"/>
+        </form>
+    </div>
+
+    <!-- Назначение книги пользователю -->
+    <div class="section users-section" th:if="${users}">
+        <span>This book is free.</span>
+        <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
+            <label for="user">Choose user</label>
+            <select th:object="${user}" th:field="*{id}" id="user">
+                <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
+                </option>
+            </select>
+            <input type="submit" value="Assign book"/>
+        </form>
+    </div>
+
+    <!-- Действия -->
+    <div class="action-links">
+        <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
+        <a th:href="@{/books}">Back to List</a>
+    </div>
+
+    <!-- Удаление книги -->
+    <div class="delete-form">
+        <form th:method="DELETE" th:action="@{/books/{id}(id=${book.id})}">
+            <input type="submit" value="DELETE!"/>
+        </form>
+    </div>
 </div>
-
-<div th:if="${users}">
-    <span>This book is free.</span>
-    <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
-        <label for="user">Choose user</label>
-        <select th:object="${user}" th:field="*{id}" id="user">
-            <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
-            </option>
-        </select>
-
-        <input type="submit" value="Assign book"/>
-    </form>
-</div>
-
-
-<div class="action-links">
-    <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
-    <a th:href="@{/books}">Back to List</a>
-</div>
-
-<br>
-<form th:method="DELETE" th:action="@{/books/{id}(id=${book.id})}">
-    <input type="submit" value="DELETE!"/>
-</form>
 </body>
 </html>

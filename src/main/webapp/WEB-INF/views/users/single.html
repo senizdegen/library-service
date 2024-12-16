@@ -1,36 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>User</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c7dbe;
+            margin-bottom: 20px;
+        }
+        .user-details {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .user-details p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        .user-details strong {
+            color: #2c7dbe;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #2c7dbe;
+            color: white;
+        }
+        .action-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .action-links a {
+            color: #2c7dbe;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        input[type="submit"] {
+            background-color: #e63946;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #c53030;
+        }
+    </style>
 </head>
 <body>
-  <h1> User details </h1>
-  <p><strong>Full Name</strong> <span th:text="${user.getFullName()}">VALUE</span></p>
-  <p><strong>Birth Year</strong> <span th:text="${user.getBirthYear()}">VALUE</span></p>
+<h1>User Details</h1>
+<div class="user-details">
+    <p><strong>Full Name:</strong> <span th:text="${user.getFullName()}">VALUE</span></p>
+    <p><strong>Birth Year:</strong> <span th:text="${user.getBirthYear()}">VALUE</span></p>
+</div>
 
-    <div th:if="${books.isEmpty()}">
-        <p>User did not take any books</p>
-        <hr/>
-    </div>
+<div th:if="${books.isEmpty()}">
+    <p>User did not take any books.</p>
+</div>
 
-    <div th:if="${!books.isEmpty()}">
-        <hr/>
-        <b>Books:</b>
-        <br>
-        <table th:each="book : ${books}">
-            <tr th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getYear()}">book</tr>
-        </table>
-    </div>
+<div th:if="${!books.isEmpty()}">
+    <h2>Books Taken:</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Book Name</th>
+            <th>Author</th>
+            <th>Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.getName()}">Book Name</td>
+            <td th:text="${book.getAuthor()}">Author</td>
+            <td th:text="${book.getYear()}">Year</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-    <div class="action-links">
-        <a th:href="@{/users/{id}/edit(id=${user.getId()})}">Edit</a>
-        <a th:href="@{/users}">Back to List</a>
-    </div>
+<div class="action-links">
+    <a th:href="@{/users/{id}/edit(id=${user.getId()})}">Edit</a>
+    <a th:href="@{/users}">Back to List</a>
+</div>
 
-    <br>
-    <form th:method="DELETE" th:action="@{/users/{id}(id=${user.id})}">
-        <input type="submit" value="DELETE!"/>
-    </form>
+<form th:method="DELETE" th:action="@{/users/{id}(id=${user.id})}">
+    <input type="submit" value="DELETE!"/>
+</form>
 </body>
 </html>
