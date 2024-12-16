@@ -13,6 +13,8 @@ public class Book {
         this.year = year;
     }
 
+    public Book(){};
+
     public int getId() {
         return id;
     }

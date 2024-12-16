@@ -7,7 +7,7 @@
 <body>
     <ul class="user-list" th:each="user : ${users}">
         <li class="user-item">
-            <a th:href="@{/people/{id}(id=${user.getId()})}" th:text="${user.getFullName()}">Name</a>
+            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getFullName()}">Name</a>
             <div class="user-details">
                 <p><strong>Birth Year</strong> <span th:text="${user.getBirthYear()}">2005</span></p>
             </div>
