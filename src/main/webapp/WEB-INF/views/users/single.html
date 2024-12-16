@@ -6,11 +6,25 @@
 </head>
 <body>
   <h1> User details </h1>
-  <p><strong>Full Name</strong> <span th:text="${user.fullName}">VALUE</span></p>
-  <p><strong>Birth Year</strong> <span th:text="${user.birthYear}">VALUE</span></p>
+  <p><strong>Full Name</strong> <span th:text="${user.getFullName()}">VALUE</span></p>
+  <p><strong>Birth Year</strong> <span th:text="${user.getBirthYear()}">VALUE</span></p>
+
+    <div th:if="${books.isEmpty()}">
+        <p>User did not take any books</p>
+        <hr/>
+    </div>
+
+    <div th:if="${!books.isEmpty()}">
+        <hr/>
+        <b>Books:</b>
+        <br>
+        <table th:each="book : ${books}">
+            <tr th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getYear()}">book</tr>
+        </table>
+    </div>
 
     <div class="action-links">
-        <a th:href="@{/users/{id}/edit(id=${user.id})}">Edit</a>
+        <a th:href="@{/users/{id}/edit(id=${user.getId()})}">Edit</a>
         <a th:href="@{/users}">Back to List</a>
     </div>
 

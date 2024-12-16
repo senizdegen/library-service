@@ -1,32 +1,42 @@
 package kz.dos.libraryService.controllers;
 
+import jakarta.validation.Valid;
 import kz.dos.libraryService.dao.UserDAO;
 import kz.dos.libraryService.models.User;
+import kz.dos.libraryService.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
     private final UserDAO userDAO;
+    private final UserValidator userValidator;
 
     @Autowired
-    public UserController(UserDAO userDAO) {
+    public UserController(UserDAO userDAO, UserValidator userValidator) {
         this.userDAO = userDAO;
+        this.userValidator = userValidator;
     }
 
     @GetMapping
     public String getAllUsers(Model model) {
-        model.addAttribute("users", userDAO.getAll());
+        List<User> users = userDAO.getAll();
+        System.out.println("Users: " + users);
+        model.addAttribute("users", users);
         return "users/all";
     }
 
+
     @GetMapping("/{id}")
     public String getUserById(@PathVariable("id") int id, Model model) {
-        User user = userDAO.getById(id);
-        model.addAttribute("user", user);
+        model.addAttribute("user", userDAO.getById(id));
+        model.addAttribute("books", userDAO.getBooksByUserId(id));
 
         return "users/single";
     }
@@ -38,7 +48,12 @@ public class UserController {
     }
 
     @PostMapping
-    public String createUser(@ModelAttribute("user") User user) {
+    public String createUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        userValidator.validate(user, bindingResult);
+        if(bindingResult.hasErrors()){
+            return "users/new";
+        }
+
         userDAO.add(user);
 
         return "redirect:/users";
@@ -52,7 +67,12 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public String updateUser(@PathVariable("id") int id, @ModelAttribute("user") User user) {
+    public String updateUser(@PathVariable("id") int id, @ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        userValidator.validate(user, bindingResult);
+        if(bindingResult.hasErrors()){
+            return "users/edit";
+        }
+
         userDAO.update(id, user);
 
         return "redirect:/users";
@@ -63,4 +83,6 @@ public class UserController {
         userDAO.delete(id);
         return "redirect:/users";
     }
+
+
 }

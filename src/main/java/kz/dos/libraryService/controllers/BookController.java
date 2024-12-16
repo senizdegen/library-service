@@ -1,20 +1,28 @@
 package kz.dos.libraryService.controllers;
 
+import jakarta.validation.Valid;
 import kz.dos.libraryService.dao.BookDAO;
+import kz.dos.libraryService.dao.UserDAO;
 import kz.dos.libraryService.models.Book;
+import kz.dos.libraryService.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/books")
 public class BookController {
     private final BookDAO bookDAO;
+    private final UserDAO userDAO;
 
     @Autowired
-    public BookController(BookDAO bookDAO) {
+    public BookController(BookDAO bookDAO, UserDAO userDAO) {
         this.bookDAO = bookDAO;
+        this.userDAO = userDAO;
     }
 
     @GetMapping
@@ -25,8 +33,15 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public String getBookById(@PathVariable("id") int id, Model model) {
+    public String getBookById(@PathVariable("id") int id, Model model, @ModelAttribute("user") User user) {
         model.addAttribute("book", bookDAO.getById(id));
+
+        Optional<User> bookOwner = bookDAO.getBookOwner(id);
+        if(bookOwner.isPresent()) {
+            model.addAttribute("owner", bookOwner.get());
+        }else{
+            model.addAttribute("users", userDAO.getAll());
+        }
 
         return "books/single";
     }
@@ -37,7 +52,12 @@ public class BookController {
     }
 
     @PostMapping
-    public String createBook(@ModelAttribute("book") Book book) {
+    public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors()) {
+            return "books/new";
+        }
+
         bookDAO.add(book);
 
         return "redirect:/books";
@@ -51,7 +71,11 @@ public class BookController {
     }
 
     @PatchMapping("/{id}")
-    public String updateBook(@ModelAttribute("book") Book book, @PathVariable("id") int id) {
+    public String updateBook(@ModelAttribute("book") @Valid Book book, @PathVariable("id") int id, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            return "books/edit";
+        }
+
         bookDAO.update(id, book);
 
         return "redirect:/books";
@@ -62,5 +86,17 @@ public class BookController {
         bookDAO.delete(id);
 
         return "redirect:/books";
+    }
+
+    @PatchMapping("/{id}/release")
+    public String releaseBook(@PathVariable("id") int id) {
+        bookDAO.release(id);
+        return "redirect:/books/" + id;
+    }
+
+    @PatchMapping("/{id}/assign")
+    public String assignBook(@PathVariable("id") int id, @ModelAttribute("user") User selectedUser) {
+        bookDAO.assign(id, selectedUser);
+        return "redirect:/books/" + id;
     }
 }

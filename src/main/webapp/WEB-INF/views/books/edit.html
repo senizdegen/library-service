@@ -10,12 +10,15 @@
 <form th:method="PATCH" th:action="@{/books/{id}(id=${book.getId()})}" th:object="${book}">
     <label for="name">Enter Name</label>
     <input type="text" th:field="*{name}" id="name" placeholder="Name"/>
+    <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</div>
 
     <label for="author">Enter Author</label>
     <input type="text" th:field="*{author}" id="author" placeholder="Author"/>
+    <div style="color:red" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Author Error</div>
 
     <label for="year">Enter Year</label>
     <input type="text" th:field="*{year}" id="year" placeholder="Year"/>
+    <div style="color:red" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year Error</div>
 
     <input type="submit" value="Update!"/>
 </form>

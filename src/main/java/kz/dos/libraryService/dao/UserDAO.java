@@ -1,5 +1,6 @@
 package kz.dos.libraryService.dao;
 
+import kz.dos.libraryService.models.Book;
 import kz.dos.libraryService.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -48,5 +50,15 @@ public class UserDAO {
 
     public void delete(int id) {
         jdbcTemplate.update("DELETE FROM Users WHERE id=?", id);
+    }
+
+    public Optional<User> getByFullName(String fullName) {
+        return jdbcTemplate.query("SELECT * FROM Users WHERE fullName=?",
+                new BeanPropertyRowMapper<>(User.class), fullName).stream().findAny();
+    }
+
+    public List<Book> getBooksByUserId(int userId) {
+        return jdbcTemplate.query("SELECT * FROM Books WHERE user_id=?",
+                new BeanPropertyRowMapper<>(Book.class), userId);
     }
 }

@@ -6,9 +6,31 @@
 </head>
 <body>
 <h1> Book details </h1>
-<p><strong>Name</strong> <span th:text="${book.name}">VALUE</span></p>
-<p><strong>Author</strong> <span th:text="${book.author}">VALUE</span></p>
-<p><strong>Year</strong> <span th:text="${book.year}">VALUE</span></p>
+<p><strong>Name</strong> <span th:text="${book.getName()}">VALUE</span></p>
+<p><strong>Author</strong> <span th:text="${book.getAuthor()}">VALUE</span></p>
+<p><strong>Year</strong> <span th:text="${book.getYear()}">VALUE</span></p>
+
+<div th:if="${owner}">
+    <span>Current owner: </span> <span th:text="${owner.getFullName()}">User name</span>
+
+    <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
+        <input type="submit" value="Release the book"/>
+    </form>
+</div>
+
+<div th:if="${users}">
+    <span>This book is free.</span>
+    <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
+        <label for="user">Choose user</label>
+        <select th:object="${user}" th:field="*{id}" id="user">
+            <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
+            </option>
+        </select>
+
+        <input type="submit" value="Assign book"/>
+    </form>
+</div>
+
 
 <div class="action-links">
     <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
