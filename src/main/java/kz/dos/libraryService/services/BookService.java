@@ -34,6 +34,16 @@ public class BookService {
         return bookRepository.findAll(pageable);
     }
 
+    public Page<Book> findByNameContainingIgnoreCase(String name, int page, int booksPerPage) {
+        Pageable pageable = PageRequest.of(page - 1, booksPerPage);
+        return bookRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    public List<Book> findByNameContainingIgnoreCase(String name) {
+        return bookRepository.findByNameContainingIgnoreCase(name);
+    }
+
+
     public Book findOne(int id) {
         Optional<Book> foundBook = bookRepository.findById(id);
         return foundBook.orElse(null);

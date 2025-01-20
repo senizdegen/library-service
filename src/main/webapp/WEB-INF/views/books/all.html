@@ -15,23 +15,50 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         h1 {
-            text-align: center;
             margin-top: 20px;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Стили для таблицы */
+        /* Поисковая форма */
+        .search-form {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .search-form input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            background: #2c7dbe;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .search-form button:hover {
+            background: #1e5c8a;
+        }
+
+        /* Таблица */
         .book-table {
             width: 80%;
-            margin: 40px auto;
+            margin: 20px auto;
             border-collapse: collapse;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -45,8 +72,6 @@
         .book-table th {
             background: #2c7dbe;
             color: #fff;
-            font-size: 1.1rem;
-            text-transform: uppercase;
         }
 
         .book-table tr:nth-child(even) {
@@ -58,50 +83,33 @@
         }
 
         .book-table a {
-            text-decoration: none;
             color: #2c7dbe;
-            font-weight: bold;
-            transition: color 0.3s;
+            text-decoration: none;
         }
 
         .book-table a:hover {
             color: #1e5c8a;
         }
 
-        /* Стили для кнопок */
-        .buttons {
+        /* Сообщение об отсутствии книг */
+        .no-books {
             text-align: center;
-            margin: 30px 0;
-        }
-
-        .create-link,
-        .back-link,
-        .toggle-pagination {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px;
-            background: linear-gradient(135deg, #2c7dbe, #1e5c8a);
+            margin: 20px auto;
+            font-size: 1.2rem;
             color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease-in-out;
+            background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .create-link:hover,
-        .back-link:hover,
-        .toggle-pagination:hover {
-            background: #1e5c8a;
-            transform: translateY(-5px);
-        }
 
         /* Пагинация */
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-top: 20px;
+            margin: 20px auto;
             gap: 10px;
         }
 
@@ -110,33 +118,49 @@
             background: #2c7dbe;
             color: #fff;
             text-decoration: none;
-            font-weight: bold;
             border-radius: 5px;
-            transition: all 0.3s ease-in-out;
         }
 
-        .pagination a:hover {
-            background: #1e5c8a;
-        }
-
-        .pagination .disabled {
-            pointer-events: none;
+        .pagination a.disabled {
             background: #aaa;
+            pointer-events: none;
         }
 
-        .page-info {
+        /* Кнопки */
+        .buttons {
             text-align: center;
-            margin: 15px 0;
+            margin: 20px auto;
+        }
+
+        .buttons a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: #2c7dbe;
             color: #fff;
-            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .buttons a:hover {
+            background: #1e5c8a;
         }
     </style>
 </head>
 <body>
 <h1>All Books</h1>
 
+<!-- Поисковая форма -->
+<div class="search-form">
+    <form th:action="@{/books}" method="get">
+        <input type="text" name="search" th:value="${searchQuery}" placeholder="Search for books...">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
 <!-- Таблица книг -->
-<table class="book-table">
+<table class="book-table" th:if="${!#lists.isEmpty(books)}">
     <thead>
     <tr>
         <th>#</th>
@@ -149,38 +173,40 @@
     <tr>
         <td th:text="${iterStat.count}">1</td>
         <td><a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName()}">Book Name</a></td>
-        <td th:text="${book.getAuthor()}">Author Name</td>
-        <td th:text="${book.getYear()}">2023</td>
+        <td th:text="${book.getAuthor()}">Author</td>
+        <td th:text="${book.getYear()}">Year</td>
     </tr>
     </tbody>
 </table>
 
-<!-- Информация о текущей странице -->
-<div class="page-info" th:if="${paginationEnabled}">
-    Page <span th:text="${currentPage}">1</span> of <span th:text="${totalPages}">1</span>
+<!-- Сообщение об отсутствии книг -->
+<div class="no-books" th:if="${#lists.isEmpty(books)}">
+    No books found. Please try again.
 </div>
 
 <!-- Пагинация -->
 <div class="pagination" th:if="${paginationEnabled}">
-    <a th:href="@{/books(page=${currentPage - 1}, booksPerPage=${booksPerPage}, pagination=true)}"
-       th:classappend="${currentPage == 1} ? 'disabled'"
-       class="prev-button">Previous</a>
-    <a th:href="@{/books(page=${currentPage + 1}, booksPerPage=${booksPerPage}, pagination=true)}"
-       th:classappend="${currentPage == totalPages} ? 'disabled'"
-       class="next-button">Next</a>
+    <a th:href="@{/books(page=${currentPage - 1}, booksPerPage=${booksPerPage}, pagination=true, search=${#strings.isEmpty(searchQuery) ? '' : searchQuery})}"
+       th:classappend="${currentPage == 1} ? 'disabled'">Previous</a>
+    <a th:href="@{/books(page=${currentPage + 1}, booksPerPage=${booksPerPage}, pagination=true, search=${#strings.isEmpty(searchQuery) ? '' : searchQuery})}"
+       th:classappend="${currentPage == totalPages} ? 'disabled'">Next</a>
 </div>
+
+<!-- Кнопки -->
 <div class="buttons">
-    <a class="create-link" href="/books/new">Add New Book</a>
-    <a class="back-link" href="/home">Home Page</a>
-
-    <a class="toggle-pagination"
-       th:if="${!paginationEnabled}"
-       th:href="@{/books?page=1&booksPerPage=4&pagination=true}">Enable Pagination</a>
-
-    <a class="toggle-pagination"
-       th:if="${paginationEnabled}"
-       th:href="@{/books}">Show All Books</a>
+    <a href="/books/new">Add New Book</a>
+    <a href="/home">Home Page</a>
+    <a th:if="${!paginationEnabled}"
+       th:href="@{/books(page=1, booksPerPage=4, pagination=true, search=${#strings.isEmpty(searchQuery) ? '' : searchQuery})}">
+        Enable Pagination
+    </a>
+    <a th:if="${paginationEnabled}"
+       th:href="@{/books(search=${#strings.isEmpty(searchQuery) ? '' : searchQuery})}">
+        Show All Books
+    </a>
 </div>
+
+
 
 
 </body>

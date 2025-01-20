@@ -29,67 +29,49 @@ public class BookController {
         this.userService = userService;
     }
 
-//    @GetMapping
-//    public String getAllBooks(Model model,
-//                              @RequestParam(name = "page", defaultValue = "1") int page,
-//                              @RequestParam(name = "booksPerPage", defaultValue = "0") int booksPerPage) {
-//
-//        System.out.println("page = " + page);
-//        System.out.println("booksPerPage = " + booksPerPage);
-//
-//        List<Book> books;
-//        int totalPages = 1;
-//
-//        if (booksPerPage > 0) {
-//            Page<Book> bookPage = bookService.findAllPaginated(page, booksPerPage);
-//            books = bookPage.getContent();
-//            totalPages = bookPage.getTotalPages();
-//        } else {
-//            books = bookService.findAll();
-//        }
-//
-//
-//        // Передача значений в модель
-//        model.addAttribute("books", books);
-//        model.addAttribute("currentPage", page);
-//        model.addAttribute("totalPages", totalPages);
-//        model.addAttribute("booksPerPage", booksPerPage);
-//
-//        System.out.println("currentPage = " + page);
-//        System.out.println("totalPages = " + totalPages);
-//        System.out.println("booksPerPage = " + booksPerPage);
-//
-//        return "books/all";
-//    }
-
     @GetMapping
     public String getBooks(
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "booksPerPage", required = false) Integer booksPerPage,
             @RequestParam(name = "pagination", defaultValue = "false") boolean pagination,
+            @RequestParam(name = "search", required = false) String searchQuery,
             Model model) {
 
         List<Book> books;
         int totalPages = 1;
 
-        if (!pagination) {
-            books = bookService.findAll();
-        } else {
+        if (pagination) {
             page = (page == null) ? 1 : page;
             booksPerPage = (booksPerPage == null) ? 10 : booksPerPage;
-            Page<Book> bookPage = bookService.findAllPaginated(page, booksPerPage);
-            books = bookPage.getContent();
-            totalPages = bookPage.getTotalPages();
+
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                // Пагинация + поиск
+                Page<Book> bookPage = bookService.findByNameContainingIgnoreCase(searchQuery, page, booksPerPage);
+                books = bookPage.getContent();
+                totalPages = bookPage.getTotalPages();
+            } else {
+                // Только пагинация
+                Page<Book> bookPage = bookService.findAllPaginated(page, booksPerPage);
+                books = bookPage.getContent();
+                totalPages = bookPage.getTotalPages();
+            }
+        } else if (searchQuery != null && !searchQuery.isEmpty()) {
+            // Только поиск без пагинации
+            books = bookService.findByNameContainingIgnoreCase(searchQuery);
+        } else {
+            // Все книги без пагинации и поиска
+            books = bookService.findAll();
         }
+
         model.addAttribute("books", books);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("booksPerPage", booksPerPage);
         model.addAttribute("paginationEnabled", pagination);
+        model.addAttribute("searchQuery", searchQuery);
 
         return "books/all";
     }
-
 
 
     @GetMapping("/{id}")
