@@ -1,10 +1,15 @@
 package kz.dos.libraryService.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+@Entity
+@Table(name = "books")
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotEmpty(message = "Name should not be empty!")
@@ -13,17 +18,15 @@ public class Book {
 
     @NotEmpty(message = "Author should not be empty!")
     private String author;
-    @Min(value = 1200, message = "Year should be higher that 1200")
+
+    @Min(value = 1200, message = "Year should be higher than 1200")
     private int year;
 
-    public Book(int id, String name, String author, int year) {
-        this.id = id;
-        this.name = name;
-        this.author = author;
-        this.year = year;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User owner;
 
-    public Book(){};
+    public Book() {}
 
     public int getId() {
         return id;
@@ -55,5 +58,13 @@ public class Book {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

@@ -1,7 +1,7 @@
 package kz.dos.libraryService.util;
 
-import kz.dos.libraryService.dao.UserDAO;
 import kz.dos.libraryService.models.User;
+import kz.dos.libraryService.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,11 +9,11 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
-    private final UserDAO userDAO;
+    private final UserService userService;
 
     @Autowired
-    public UserValidator(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserValidator(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         User user = (User)target;
-        if(userDAO.getByFullName(user.getFullName()).isPresent()){
+        if(userService.getByFullName(user.getFullName()).isPresent()){
             errors.rejectValue("fullName", "", "User by this name already exists");
         }
     }

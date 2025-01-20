@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title style="color: #333333">All Books</title>
+    <title>All Books</title>
     <style>
         /* Общие стили */
         body {
@@ -24,70 +24,59 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Стили для списка книг */
-        .book-list {
-            list-style: none;
-            padding: 0;
+        /* Стили для таблицы */
+        .book-table {
+            width: 80%;
             margin: 40px auto;
-            max-width: 900px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .book-item {
+            border-collapse: collapse;
             background: rgba(255, 255, 255, 0.9);
-            width: 280px;
-            padding: 20px;
             border-radius: 10px;
+            overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-table th,
+        .book-table td {
+            padding: 15px;
             text-align: center;
-            transition: all 0.3s ease-in-out;
+            border: 1px solid #ddd;
         }
 
-        .book-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .book-table th {
+            background: #2c7dbe;
+            color: #fff;
+            font-size: 1.1rem;
+            text-transform: uppercase;
         }
 
-        .book-item a {
+        .book-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .book-table tr:hover {
+            background: #f1f1f1;
+        }
+
+        .book-table a {
             text-decoration: none;
             color: #2c7dbe;
-            font-size: 1.3rem;
             font-weight: bold;
             transition: color 0.3s;
         }
 
-        .book-item a:hover {
+        .book-table a:hover {
             color: #1e5c8a;
-            text-decoration: underline;
-        }
-
-        .book-details {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .book-details p {
-            margin: 5px 0;
-        }
-
-        hr {
-            margin: 40px auto;
-            width: 80%;
-            border: 0;
-            border-top: 1px solid #ddd;
         }
 
         /* Стили для кнопок */
         .buttons {
             text-align: center;
-            margin-bottom: 30px;
+            margin: 30px 0;
         }
 
-        .create-link {
+        .create-link,
+        .back-link,
+        .toggle-pagination {
             display: inline-block;
             padding: 12px 25px;
             margin: 10px;
@@ -100,45 +89,99 @@
             transition: all 0.3s ease-in-out;
         }
 
-        .create-link:hover {
+        .create-link:hover,
+        .back-link:hover,
+        .toggle-pagination:hover {
             background: #1e5c8a;
             transform: translateY(-5px);
         }
 
-        .back-link {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px;
-            background: linear-gradient(135deg, #2c7dbe, #1e5c8a);
+        /* Пагинация */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination a {
+            padding: 10px 15px;
+            background: #2c7dbe;
             color: #fff;
             text-decoration: none;
             font-weight: bold;
-            border-radius: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
             transition: all 0.3s ease-in-out;
         }
 
-        .back-link:hover {
-            color: #2c7dbe;
-            text-decoration: underline;
+        .pagination a:hover {
+            background: #1e5c8a;
+        }
+
+        .pagination .disabled {
+            pointer-events: none;
+            background: #aaa;
+        }
+
+        .page-info {
+            text-align: center;
+            margin: 15px 0;
+            color: #fff;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
 <h1>All Books</h1>
-<ul class="book-list" th:each="book : ${books}">
-    <li class="book-item">
-        <a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName()}">Book Name</a>
-        <div class="book-details">
-            <p><strong>Author:</strong> <span th:text="${book.getAuthor()}">Author Name</span></p>
-            <p><strong>Year:</strong> <span th:text="${book.getYear()}">2023</span></p>
-        </div>
-    </li>
-</ul>
 
+<!-- Таблица книг -->
+<table class="book-table">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Book Name</th>
+        <th>Author</th>
+        <th>Year</th>
+    </tr>
+    </thead>
+    <tbody th:each="book, iterStat : ${books}">
+    <tr>
+        <td th:text="${iterStat.count}">1</td>
+        <td><a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName()}">Book Name</a></td>
+        <td th:text="${book.getAuthor()}">Author Name</td>
+        <td th:text="${book.getYear()}">2023</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Информация о текущей странице -->
+<div class="page-info" th:if="${paginationEnabled}">
+    Page <span th:text="${currentPage}">1</span> of <span th:text="${totalPages}">1</span>
+</div>
+
+<!-- Пагинация -->
+<div class="pagination" th:if="${paginationEnabled}">
+    <a th:href="@{/books(page=${currentPage - 1}, booksPerPage=${booksPerPage}, pagination=true)}"
+       th:classappend="${currentPage == 1} ? 'disabled'"
+       class="prev-button">Previous</a>
+    <a th:href="@{/books(page=${currentPage + 1}, booksPerPage=${booksPerPage}, pagination=true)}"
+       th:classappend="${currentPage == totalPages} ? 'disabled'"
+       class="next-button">Next</a>
+</div>
 <div class="buttons">
     <a class="create-link" href="/books/new">Add New Book</a>
     <a class="back-link" href="/home">Home Page</a>
+
+    <a class="toggle-pagination"
+       th:if="${!paginationEnabled}"
+       th:href="@{/books?page=1&booksPerPage=4&pagination=true}">Enable Pagination</a>
+
+    <a class="toggle-pagination"
+       th:if="${paginationEnabled}"
+       th:href="@{/books}">Show All Books</a>
 </div>
+
+
 </body>
 </html>

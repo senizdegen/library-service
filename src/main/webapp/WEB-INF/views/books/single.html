@@ -127,7 +127,6 @@
     <p><strong>Author:</strong> <span th:text="${book.getAuthor()}">VALUE</span></p>
     <p><strong>Year:</strong> <span th:text="${book.getYear()}">VALUE</span></p>
 
-    <!-- Владелец книги -->
     <div class="section owner-section" th:if="${owner}">
         <span>Current owner:</span> <span th:text="${owner.getFullName()}">User name</span>
         <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
@@ -135,18 +134,31 @@
         </form>
     </div>
 
-    <!-- Назначение книги пользователю -->
+<!--    <div class="section users-section" th:if="${users}">-->
+<!--        <span>This book is free.</span>-->
+<!--        <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">-->
+<!--            <label for="user">Choose user</label>-->
+<!--            <select th:object="${user}" th:field="*{id}" id="user">-->
+<!--                <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">-->
+<!--                </option>-->
+<!--            </select>-->
+<!--            <input type="submit" value="Assign book"/>-->
+<!--        </form>-->
+<!--    </div>-->
+
     <div class="section users-section" th:if="${users}">
         <span>This book is free.</span>
         <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
             <label for="user">Choose user</label>
-            <select th:object="${user}" th:field="*{id}" id="user">
+            <select name="id" id="user">
                 <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
                 </option>
             </select>
-            <input type="submit" value="Assign book"/>
+            <input type="submit" value="Assign book" />
         </form>
     </div>
+
+
 
     <!-- Действия -->
     <div class="action-links">
