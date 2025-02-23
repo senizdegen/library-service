@@ -11,7 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,16 @@ public class BookService {
         Pageable pageable = PageRequest.of(page - 1, bookPerPage);
         return bookRepository.findAll(pageable);
     }
+
+    public Page<Book> findAllPaginatedSortedByYear(int page, int bookPerPage) {
+        Pageable pageable = PageRequest.of(page - 1, bookPerPage).withSort(Sort.by(Sort.Direction.ASC, "year"));
+        return bookRepository.findAll(pageable);
+    }
+
+    public List<Book> findAllSortedByYear() {
+        return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "year"));
+    }
+
 
     public Page<Book> findByNameContainingIgnoreCase(String name, int page, int booksPerPage) {
         Pageable pageable = PageRequest.of(page - 1, booksPerPage);
@@ -79,6 +91,7 @@ public class BookService {
         Book foundBook = bookRepository.findById(id).orElse(null);
         if (foundBook != null) {
             foundBook.setOwner(null);
+            foundBook.setIssueDate(null);
             bookRepository.save(foundBook);
         }
     }
@@ -88,6 +101,7 @@ public class BookService {
         Book book = bookRepository.findById(id).orElse(null);
         if (book != null) {
             book.setOwner(selectedUser);
+            book.setIssueDate(LocalDate.now());
             bookRepository.save(book);
         }
     }

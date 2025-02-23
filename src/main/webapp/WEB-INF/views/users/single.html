@@ -49,6 +49,11 @@
             background-color: #2c7dbe;
             color: white;
         }
+        .overdue {
+            background-color: #ffcccc;
+            color: red;
+            font-weight: bold;
+        }
         .action-links {
             text-align: center;
             margin-top: 20px;
@@ -100,13 +105,15 @@
             <th>Book Name</th>
             <th>Author</th>
             <th>Year</th>
+            <th>Issue Date</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="book : ${books}">
+        <tr th:each="book : ${books}" th:classappend="${book.isOverdue()} ? 'overdue' : ''">
             <td th:text="${book.getName()}">Book Name</td>
             <td th:text="${book.getAuthor()}">Author</td>
             <td th:text="${book.getYear()}">Year</td>
+            <td th:text="${book.getIssueDate()}">Issue Date</td>
         </tr>
         </tbody>
     </table>

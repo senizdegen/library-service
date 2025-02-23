@@ -34,7 +34,7 @@ public class BookController {
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "booksPerPage", required = false) Integer booksPerPage,
             @RequestParam(name = "pagination", defaultValue = "false") boolean pagination,
-            @RequestParam(name = "search", required = false) String searchQuery,
+            @RequestParam(name = "sort_by_year", required = false) Boolean sortByYear,
             Model model) {
 
         List<Book> books;
@@ -44,23 +44,22 @@ public class BookController {
             page = (page == null) ? 1 : page;
             booksPerPage = (booksPerPage == null) ? 10 : booksPerPage;
 
-            if (searchQuery != null && !searchQuery.isEmpty()) {
-                // Пагинация + поиск
-                Page<Book> bookPage = bookService.findByNameContainingIgnoreCase(searchQuery, page, booksPerPage);
-                books = bookPage.getContent();
-                totalPages = bookPage.getTotalPages();
+            Page<Book> bookPage;
+
+            if (sortByYear != null) {
+                bookPage = bookService.findAllPaginatedSortedByYear(page, booksPerPage);
             } else {
-                // Только пагинация
-                Page<Book> bookPage = bookService.findAllPaginated(page, booksPerPage);
-                books = bookPage.getContent();
-                totalPages = bookPage.getTotalPages();
+                bookPage = bookService.findAllPaginated(page, booksPerPage);
             }
-        } else if (searchQuery != null && !searchQuery.isEmpty()) {
-            // Только поиск без пагинации
-            books = bookService.findByNameContainingIgnoreCase(searchQuery);
+
+            books = bookPage.getContent();
+            totalPages = bookPage.getTotalPages();
         } else {
-            // Все книги без пагинации и поиска
-            books = bookService.findAll();
+            if (sortByYear != null) {
+                books = bookService.findAllSortedByYear();
+            } else {
+                books = bookService.findAll();
+            }
         }
 
         model.addAttribute("books", books);
@@ -68,6 +67,18 @@ public class BookController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("booksPerPage", booksPerPage);
         model.addAttribute("paginationEnabled", pagination);
+        model.addAttribute("sortByYear", sortByYear);
+
+        return "books/all";
+    }
+
+
+    @GetMapping("/search")
+    public String searchBook(@RequestParam(name = "search", required = false) String searchQuery, Model model) {
+        List<Book> books;
+
+        books = bookService.findByNameContainingIgnoreCase(searchQuery);
+        model.addAttribute("books", books);
         model.addAttribute("searchQuery", searchQuery);
 
         return "books/all";
@@ -79,9 +90,9 @@ public class BookController {
         model.addAttribute("book", bookService.findOne(id));
 
         Optional<User> bookOwner = bookService.getBookOwner(id);
-        if(bookOwner.isPresent()) {
+        if (bookOwner.isPresent()) {
             model.addAttribute("owner", bookOwner.get());
-        }else{
+        } else {
             model.addAttribute("users", userService.findAll());
         }
 
@@ -96,7 +107,7 @@ public class BookController {
     @PostMapping
     public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "books/new";
         }
 
@@ -114,7 +125,7 @@ public class BookController {
 
     @PatchMapping("/{id}")
     public String updateBook(@ModelAttribute("book") @Valid Book book, @PathVariable("id") int id, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "books/edit";
         }
 

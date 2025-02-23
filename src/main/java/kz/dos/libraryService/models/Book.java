@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "books")
 public class Book {
@@ -26,7 +28,11 @@ public class Book {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
-    public Book() {}
+    @Column(name = "issue_date")
+    private LocalDate issueDate;
+
+    public Book() {
+    }
 
     public int getId() {
         return id;
@@ -66,5 +72,17 @@ public class Book {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(LocalDate issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public boolean isOverdue(){
+        return issueDate != null && issueDate.plusDays(10).isBefore(LocalDate.now());
     }
 }
